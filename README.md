@@ -7,7 +7,7 @@
 ```bash
 npm test
 npm start
-# open http://localhost:8099
+# open http://127.0.0.1:8099
 ```
 
 Fixture mode runs without credentials and is **not evidence of live AI**. For live Muse Spark on **synthetic messages only**:
@@ -51,3 +51,7 @@ Run `npm test` to execute the automated tests. Set `AI_MODE=meta`, `MODEL_API_KE
 ## Milestone M3: independent verification
 
 The verifier now computes risk from locally observed indicators and checks the model's risk, action vocabulary, evidence references, structure, and size limits before any guidance lookup. A rejected proposal executes no tools. API responses contain a safe projection of the plan, so untrusted model prose and extra fields cannot be echoed to the browser. The human gate remains simulated; no report is sent. The pull request test workflow runs the Node test suite without API credentials.
+
+## Next step: local approval decision
+
+After an assessment proposes a synthetic report, review the sanitized metadata in the browser and choose **Approve locally** or **Decline** within 15 minutes. This one-time decision is held only in server memory and is lost when the app restarts. Approval does not publish a GitHub issue, send a report, or authorize real-world action. The server listens on `127.0.0.1` and requires a matching local origin for browser requests.
