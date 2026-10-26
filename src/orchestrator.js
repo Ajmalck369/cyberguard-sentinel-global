@@ -1,6 +1,7 @@
 import {randomUUID, createHash} from 'node:crypto';
 import {assess_with_meta} from './meta.js';
-import {inspect_indicators, verify_plan, sanitize_public_report} from './core.js';
+import {inspect_indicators, sanitize_public_report} from './core.js';
+import {verify_assessment} from './verifier.js';
 
 // Demo-only approved knowledge: not a live government directory.
 const playbooks = Object.freeze({
@@ -24,12 +25,12 @@ export async function run_agent(input,{assessor=assess_with_meta}={}) {
   const indicators=inspect_indicators(input.message);
   record('observe','inspect_indicators','completed',{indicator_codes:indicators});
   const result=await assessor({...input,language,scenario_id});
-  record('reason','meta_assessment', 'completed',{provider:result.mode,model:result.model||'fixture',risk_level:result.plan?.risk_level,proposed_action_codes:result.plan?.actions?.map(x=>x.code)||[]});
-  const initial=verify_plan(result.plan,{indicator_codes:indicators});
+  const {plan,verification:initial}=verify_assessment(result,indicators);
+  record('reason','meta_assessment','completed',{provider:result?.mode==='meta'?'meta':'fixture',proposed_action_codes:plan.actions.map(action=>action.code)});
   record('verify','verify_plan',initial.status,{errors:initial.errors,approval_required:initial.approval_required});
   const tools=[];
   if(initial.status!=='rejected'){
-    for(const action of result.plan.actions){
+    for(const action of plan.actions){
       // The model selects from the closed action vocabulary; each call is independently checked.
       if(!allowlist.has(action.code)) continue;
       if(action.code==='submit_synthetic_report'){
@@ -42,7 +43,7 @@ export async function run_agent(input,{assessor=assess_with_meta}={}) {
     }
   } else record('act','tool_execution','blocked',{reason:'verification_rejected'});
   const verification={...initial,executed_tools:tools.filter(x=>x.status==='completed').length};
-  const sanitized=sanitize_public_report({scenario_id,language,risk_level:result.plan.risk_level,indicator_codes:indicators,approved_action_codes:initial.status==='rejected'?[]:result.plan.actions.filter(x=>x.code!=='submit_synthetic_report').map(x=>x.code)});
+  const sanitized=sanitize_public_report({scenario_id,language,risk_level:plan.risk_level,indicator_codes:indicators,approved_action_codes:plan.actions.filter(action=>action.code!=='submit_synthetic_report').map(action=>action.code)});
   const audit_event={id:randomUUID(),kind:'synthetic_agent_run',at:new Date().toISOString(),hash:hash({scenario_id,indicators,verification,trace})};
-  return {...result,run_id,language,scenario_id,indicator_codes:indicators,verification,tool_results:tools,trace,proposed_git_report:sanitized,audit_event,note:'Synthetic-only. No agency, bank, or GitHub action executed. Approval is simulated and never automatically granted.'};
+  return {mode:result?.mode==='meta'?'meta':'fixture',run_id,language,scenario_id,indicator_codes:indicators,plan,verification,tool_results:tools,trace,proposed_git_report:sanitized,audit_event,note:'Synthetic-only. No agency, bank, or GitHub action executed. Approval is simulated and never automatically granted.'};
 }

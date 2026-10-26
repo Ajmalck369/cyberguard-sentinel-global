@@ -46,4 +46,8 @@ The POST `/api/v1/synthetic_assessments` endpoint now also returns `run_id`, `tr
 
 This is the **first bounded tool-execution slice**, not yet model-native function calling or a multi-turn agent loop. There is currently no persisted human approval workflow, cross-agency case execution, GitHub ingestion, or autonomous retraining. Live Meta inference must be tested separately with your own account; local tests use injected deterministic fixtures.
 
-Run `npm test` to execute 10 automated tests. Set `AI_MODE=meta`, `MODEL_API_KEY` and optionally `META_MODEL=muse-spark-1.3` to use your live model. Never send genuine victim evidence through the free-credit model API.
+Run `npm test` to execute the automated tests. Set `AI_MODE=meta`, `MODEL_API_KEY` and optionally `META_MODEL=muse-spark-1.3` to use your live model. Never send genuine victim evidence through the free-credit model API.
+
+## Milestone M3: independent verification
+
+The verifier now computes risk from locally observed indicators and checks the model's risk, action vocabulary, evidence references, structure, and size limits before any guidance lookup. A rejected proposal executes no tools. API responses contain a safe projection of the plan, so untrusted model prose and extra fields cannot be echoed to the browser. The human gate remains simulated; no report is sent. The pull request test workflow runs the Node test suite without API credentials.
