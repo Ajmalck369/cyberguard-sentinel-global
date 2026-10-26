@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {run_agent} from '../src/orchestrator.js';
+import {baseline_analysis} from '../src/core.js';
+const input={message:'URGENT: share OTP with bank',language:'en',scenario_id:'case_01',synthetic_confirmed:true};
+const assessor=async x=>baseline_analysis(x);
+test('agent produces ordered, verifiable tool trace',async()=>{const result=await run_agent(input,{assessor});assert.equal(result.mode,'fixture');assert.deepEqual(result.trace.map(x=>x.sequence),result.trace.map((_,i)=>i+1));assert.equal(result.trace[0].tool,'inspect_indicators');assert.ok(result.trace.some(x=>x.tool==='lookup_approved_playbook'));});
+test('report proposal is gated and not executed',async()=>{const result=await run_agent(input,{assessor});assert.equal(result.verification.status,'pending_human_approval');assert.equal(result.tool_results.find(x=>x.action_code==='submit_synthetic_report').status,'pending_human_approval');assert.ok(!result.tool_results.some(x=>x.tool==='send_real_report'));});
+test('unsafe model plan stops tool execution',async()=>{const malicious=async x=>({mode:'meta',language:x.language,scenario_id:x.scenario_id,plan:{risk_level:'high_risk',actions:[{code:'send_victim_data_to_git',evidence_codes:[]}],summary:'bad',uncertainty:[]}});const result=await run_agent(input,{assessor:malicious});assert.equal(result.verification.status,'rejected');assert.equal(result.tool_results.length,0);assert.equal(result.proposed_git_report.approved_action_codes.length,0);});
+test('requires explicit synthetic confirmation',async()=>await assert.rejects(run_agent({...input,synthetic_confirmed:false},{assessor}),/synthetic_data_only/));
+test('trace never repeats raw message',async()=>{const result=await run_agent(input,{assessor});assert.equal(JSON.stringify(result.trace).includes(input.message),false);assert.equal(JSON.stringify(result.proposed_git_report).includes(input.message),false);});

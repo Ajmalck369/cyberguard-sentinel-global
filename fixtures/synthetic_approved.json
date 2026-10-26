@@ -1,0 +1,10 @@
+{
+  "human_approved": true,
+  "synthetic_confirmed": true,
+  "scenario_id": "urgent_bank_otp_demo",
+  "language": "en",
+  "risk_level": "high_risk",
+  "indicator_codes": ["credential_request", "urgent_pressure"],
+  "approved_action_codes": ["stop_disclosing_secrets", "contact_verified_provider"],
+  "message": "DELIBERATELY EXCLUDED FROM GIT EXPORT: fictional example text"
+}

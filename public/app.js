@@ -1,0 +1,5 @@
+const by_id=id=>document.getElementById(id);
+by_id('run').addEventListener('click',async()=>{
+ by_id('state').textContent='Analyzing synthetic scenario...';by_id('result').textContent='';by_id('trace').replaceChildren();
+ try {const response=await fetch('/api/v1/synthetic_assessments',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:by_id('msg').value,language:by_id('lang').value,scenario_id:'web_demo',synthetic_confirmed:by_id('confirm').checked})});const data=await response.json();by_id('state').textContent=response.ok?'Completed; no external actions taken.':'Assessment failed.';by_id('result').textContent=JSON.stringify(data,null,2);if(response.ok&&Array.isArray(data.trace)){const title=document.createElement('h3');title.textContent='Agent execution trace';by_id('trace').append(title);for(const item of data.trace){const line=document.createElement('div');line.className='trace-step';line.textContent=`${item.sequence}. ${item.step} / ${item.tool} — ${item.status}`;by_id('trace').append(line);}}}catch(e){by_id('state').textContent='Network error';}
+});

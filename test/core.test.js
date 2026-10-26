@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {baseline_analysis,verify_plan,sanitize_public_report,inspect_indicators} from '../src/core.js';
+test('detects synthetic OTP pressure',()=>assert.deepEqual(inspect_indicators('URGENT share OTP now'),['credential_request','urgent_pressure']));
+test('fixture results require human approval for report',()=>{const r=baseline_analysis({message:'URGENT send OTP'});assert.equal(r.plan.risk_level,'high_risk');assert.equal(verify_plan(r.plan,{indicator_codes:r.indicator_codes}).status,'pending_human_approval');});
+test('blocks real bank actions and ungrounded claims',()=>{const result=verify_plan({actions:[{code:'freeze_real_account',evidence_codes:['missing']}]},{indicator_codes:[]});assert.equal(result.status,'rejected');assert.ok(result.errors.includes('disallowed_action'));assert.ok(result.errors.includes('unsupported_evidence_reference'));});
+test('Git report strictly strips text, names, phones and URLs',()=>{const out=sanitize_public_report({scenario_id:'test',language:'ar',risk_level:'suspicious',indicator_codes:['urgent_pressure'],private_victim:'Alice',message:'OTP 1234',email:'alice@example.com',phone:'+123456789'});assert.equal(out.message,undefined);assert.equal(out.private_victim,undefined);assert.equal(out.email,undefined);assert.equal(out.phone,undefined);assert.equal(out.is_synthetic,true);});
+test('rejects unknown action even if model produced it',()=>assert.equal(verify_plan({actions:[{code:'delete_evidence',evidence_codes:[]}]},{indicator_codes:[]}).status,'rejected'));
