@@ -1,8 +1,10 @@
 const by_id=id=>document.getElementById(id);
 let pending_approval=null;
+let displayed_result=null;
 
 by_id('run').addEventListener('click',async()=>{
   pending_approval=null;
+  displayed_result=null;
   by_id('approval-panel').hidden=true;
   by_id('approval-state').textContent='';
   by_id('approve').disabled=false;
@@ -15,6 +17,7 @@ by_id('run').addEventListener('click',async()=>{
     const data=await response.json();
     by_id('state').textContent=response.ok?'Assessment complete; no external actions taken.':'Assessment failed.';
     const visible={...data,approval:data.approval?{status:data.approval.status,expires_at:data.approval.expires_at}:null};
+    displayed_result=visible;
     by_id('result').textContent=JSON.stringify(visible,null,2);
     if(response.ok&&Array.isArray(data.trace)){
       const title=document.createElement('h3');title.textContent='Agent execution trace';by_id('trace').append(title);
@@ -39,6 +42,9 @@ async function decide(decision) {
     const result=await response.json();
     if(!response.ok) throw new Error(result.status||result.error||'decision_failed');
     pending_approval=null;
+    displayed_result.approval.status=result.status;
+    displayed_result.approval.note=result.note;
+    by_id('result').textContent=JSON.stringify(displayed_result,null,2);
     by_id('approval-state').textContent=result.status==='approved_locally'?'Approved in this local demo. No report was sent.':'Declined. No report was sent.';
   }catch(error){
     by_id('approval-state').textContent=`Decision failed: ${error.message}`;
@@ -49,3 +55,4 @@ async function decide(decision) {
 
 by_id('approve').addEventListener('click',()=>decide('approve'));
 by_id('decline').addEventListener('click',()=>decide('decline'));
+
