@@ -4,6 +4,7 @@ import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {create_approval_store} from './approval.js';
 import {run_agent} from './orchestrator.js';
+import {country_codes} from './referral.js';
 
 const public_dir=fileURLToPath(new URL('../public/',import.meta.url));
 const approval_path=/^\/api\/v1\/synthetic_assessments\/([0-9a-f-]{36})\/approval$/;
@@ -39,8 +40,10 @@ export function create_server({assessor}={}) {
         return send(res,status,decision);
       }
       if(body?.synthetic_confirmed!==true || typeof body.message!=='string' || !body.message.trim() || body.message.length>6000) return send(res,400,{error:'synthetic_data_only'});
+      const country_code=body.country_code??'GLOBAL';
+      if(!country_codes.includes(country_code)) return send(res,400,{error:'unsupported_country_code'});
       const result=await run_agent(body,{assessor});
-      const approval=approvals.create(result);
+      const approval=approvals.create(result,country_code);
       return send(res,200,{...result,approval});
     }catch(error){return send(res,502,{error:'assessment_failed',detail:String(error.message||error).slice(0,120)});}
   });

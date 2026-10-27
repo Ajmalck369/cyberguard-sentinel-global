@@ -55,3 +55,7 @@ The verifier now computes risk from locally observed indicators and checks the m
 ## Next step: local approval decision
 
 After an assessment proposes a synthetic report, review the sanitized metadata in the browser and choose **Approve locally** or **Decline** within 15 minutes. This one-time decision is held only in server memory and is lost when the app restarts. Approval does not publish a GitHub issue, send a report, or authorize real-world action. The server listens on `127.0.0.1` and requires a matching local origin for browser requests.
+
+## Synthetic referral preview
+
+Choose the Global, UAE, or India **demo** pack before analyzing. An approved synthetic proposal creates a local referral preview with a versioned review checklist and `destination: "none"`; a declined or expired proposal creates none. The packs contain no official reporting routes or legal rules. A human would need to verify any real destination independently. The preview contains only sanitized metadata and disappears when the server restarts.
