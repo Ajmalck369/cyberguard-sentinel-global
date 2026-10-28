@@ -1,14 +1,14 @@
 # CyberGuard Sentinel Global — proposed production architecture
 
 ## Scope
-New synthetic-data hackathon application; no real cases, agencies, financial action, enforcement, or legal assessment. All model outputs are proposals.
+New synthetic-data hackathon application focused on financial and real-estate scam messages; no real cases, agencies, financial action, enforcement, or legal assessment. All model outputs are proposals.
 
 ## Components
 - Intake and consent gate: user must affirm inputs are synthetic in the demo.
 - Muse Spark agent: bounded prompts and JSON schema; tool calls introduced in later milestones.
 - Deterministic risk indicators: auditable regex examples, not comprehensive detection.
 - Independent policy verifier: recompute risk from local indicators; validate model structure, action codes and observed evidence references before guidance lookups.
-- Human gate: a local, one-time synthetic report decision can be approved or declined within 15 minutes; no external action follows.
+- Human gate: a local, one-time synthetic report decision can be approved or declined within 15 minutes; approval prepares a local referral preview with no external destination.
 - Intelligence export: strict metadata allowlist, separate manual CLI, synthetic and approved flags.
 - Audit: current demo returns a single SHA-256 record; persistent append-only audit is future work.
 

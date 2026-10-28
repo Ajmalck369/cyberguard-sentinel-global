@@ -9,6 +9,9 @@ const playbooks = Object.freeze({
   contact_verified_provider:{source:'synthetic_playbook_v1',guidance:'Contact the provider through its independently verified app or website.'},
   preserve_evidence:{source:'synthetic_playbook_v1',guidance:'Keep the original message and relevant records; do not forward private evidence publicly.'},
   review_account_access:{source:'synthetic_playbook_v1',guidance:'Review security activity through the provider’s official application.'},
+  avoid_untrusted_links:{source:'synthetic_playbook_v2',guidance:'Do not use the message link. Open a previously verified app or type the known official address.'},
+  verify_property_listing:{source:'synthetic_playbook_v2',guidance:'Verify the listing, agent, and property through independent trusted records before paying any deposit.'},
+  avoid_untrusted_attachments:{source:'synthetic_playbook_v2',guidance:'Do not open unexpected attachments, download files, or enable macros from the message.'},
   submit_synthetic_report:{source:'synthetic_playbook_v1',guidance:'Draft a demonstration-only report, pending explicit review.'}
 });
 const allowed_languages=new Set(['en','ar','hi','fr','es']);
