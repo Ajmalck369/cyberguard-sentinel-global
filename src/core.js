@@ -1,13 +1,13 @@
 import { createHash, randomUUID } from 'node:crypto';
 
 const suspicious_patterns = [
-  { id:'credential_request', pattern:/\b(otp|one.time password|password|pin|cvv|security code|verification code|رمز التحقق|كلمة المرور|पासवर्ड)\b/i },
-  { id:'urgent_pressure', pattern:/\b(urgent|immediately|account suspended|verify now|act now|today|فوراً|عاجل|तुरंत)\b/i },
-  { id:'financial_request', pattern:/\b(transfer|wire|payment|bank|card|deposit|تحويل|بنك|भुगतान)\b/i },
+  { id:'credential_request', pattern:/\b(otp|one.time password|password|pin|cvv|security code|verification code|mot de passe|código de verificación)\b|رمز التحقق|كلمة المرور|पासवर्ड/iu },
+  { id:'urgent_pressure', pattern:/\b(urgent|urgente|immediately|account suspended|verify now|act now|last chance|before midnight)\b|فوراً|عاجل|तुरंत/iu },
+  { id:'financial_request', pattern:/\b(send|make|pay|transfer|wire|provide|share)\b.{0,50}\b(money|payment|deposit|fee|funds|bank details|card details)\b|\b(wire transfer|payment required|deposit required)\b/i },
   { id:'phishing_link', pattern:/\b(click|open|tap|visit|sign in|log in|verify)\b.{0,80}(?:\blink\b|\burl\b|https?:\/\/|\bwebsite\b)/i },
   { id:'sender_impersonation_claim', pattern:/\b(from|this is|on behalf of|official)\s+(?:(?:your|the)\s+)?(bank|card issuer|landlord|property agent|security team|support team)\b/i },
-  { id:'rental_deposit_pressure', pattern:/\b(rent|rental|apartment|flat|property|landlord|villa)\b.{0,100}\b(deposit|booking fee|application fee|advance payment)\b/i },
-  { id:'no_viewing_pressure', pattern:/\b(no viewing|cannot view|can't view|before viewing|without viewing|owner abroad|below market)\b/i },
+  { id:'rental_deposit_pressure', pattern:/\b(rent|rental|apartment|flat|property|landlord|villa)\b.{0,100}\b(deposit|booking fee|application fee|advance payment)\b|(?:شقة|إيجار|عقار).{0,80}(?:عربون|وديعة|دفعة مقدمة)/iu },
+  { id:'no_viewing_pressure', pattern:/\b(no viewing|cannot view|can't view|before viewing|without viewing|owner abroad|below market)\b|قبل المعاينة/iu },
   { id:'card_compromise_claim', pattern:/\b(card (?:was |has been )?(?:cloned|duplicated|compromised)|unauthori[sz]ed (?:card )?(?:charge|transaction)|card skimm(?:er|ing))\b/i },
   { id:'ransomware_threat', pattern:/\b(ransomware|files (?:are |were |will be )?encrypted|decrypt (?:your )?files|pay (?:the )?ransom)\b/i },
   { id:'attachment_lure', pattern:/\b(open|download|run)\b.{0,60}\b(attachment|file|invoice|document)\b|\benable macros\b/i }
@@ -69,7 +69,7 @@ export function verify_plan(plan, context={}) {
 export function baseline_analysis({message,language='en',scenario_id='demo'}) {
   const indicator_codes=inspect_indicators(message);
   const has=code=>indicator_codes.includes(code);
-  const high_risk=has('credential_request')&&(has('urgent_pressure')||has('phishing_link')) || has('rental_deposit_pressure')&&(has('urgent_pressure')||has('no_viewing_pressure')) || has('ransomware_threat')&&(has('attachment_lure')||has('urgent_pressure')) || has('card_compromise_claim')&&has('urgent_pressure') || has('phishing_link')&&has('sender_impersonation_claim')&&has('urgent_pressure');
+  const high_risk=has('credential_request')&&(has('urgent_pressure')||has('phishing_link')) || has('rental_deposit_pressure')&&(has('urgent_pressure')||has('no_viewing_pressure')) || has('ransomware_threat')&&(has('attachment_lure')||has('urgent_pressure')) || has('card_compromise_claim')&&has('urgent_pressure') || has('phishing_link')&&has('sender_impersonation_claim');
   const risk_level=high_risk?'high_risk':indicator_codes.length?'suspicious':'inconclusive';
   const proposed_codes=['contact_verified_provider'];
   if(has('credential_request')) proposed_codes.push('stop_disclosing_secrets');
