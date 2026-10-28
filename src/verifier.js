@@ -5,7 +5,8 @@ const plan_fields=new Set(['summary','risk_level','uncertainty','actions']);
 const action_fields=new Set(['code','evidence_codes']);
 
 export function independent_risk(indicator_codes) {
-  if(indicator_codes.includes('credential_request') && indicator_codes.includes('urgent_pressure')) return 'high_risk';
+  const has=code=>indicator_codes.includes(code);
+  if(has('credential_request')&&(has('urgent_pressure')||has('phishing_link')) || has('rental_deposit_pressure')&&(has('urgent_pressure')||has('no_viewing_pressure')) || has('ransomware_threat')&&(has('attachment_lure')||has('urgent_pressure')) || has('card_compromise_claim')&&has('urgent_pressure') || has('phishing_link')&&has('sender_impersonation_claim')&&has('urgent_pressure')) return 'high_risk';
   return indicator_codes.length?'suspicious':'inconclusive';
 }
 

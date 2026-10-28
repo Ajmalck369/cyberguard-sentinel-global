@@ -1,6 +1,16 @@
 const by_id=id=>document.getElementById(id);
+const samples={
+  otp:'URGENT: Your bank account is suspended. Share your OTP immediately to verify.',
+  phishing:'This is your bank. Verify now at https://example.invalid/login or your account will close today.',
+  rental:'Flat for rent below market. Owner abroad. Pay the deposit today before viewing.',
+  card:'Your card was cloned. Call the number in this email immediately to secure your account.',
+  fake_email:'This is your bank security team. Click the link to verify your account today.',
+  ransomware:'Open the attached invoice immediately or your files will be encrypted and a ransom demanded.'
+};
 let pending_approval=null;
 let displayed_result=null;
+
+by_id('example').addEventListener('change',()=>{by_id('msg').value=samples[by_id('example').value]||'';});
 
 by_id('run').addEventListener('click',async()=>{
   pending_approval=null;

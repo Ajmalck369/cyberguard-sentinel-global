@@ -2,6 +2,8 @@
 
 **Defensive, synthetic-data-only verification-first cybercrime response demo.** New standalone code, not a fork of UAE Cyber Guard. All agencies and reports are fictional, no live integration exists.
 
+The demo focuses on financial scam signals: phishing links, OTP and card-detail requests, claimed bank or support emails, card compromise claims, ransomware-themed emails, and rental deposit pressure. Choose an invented example in the browser. These are illustrative text cues, not proof of sender identity, card cloning, malware infection, or property ownership. Do not paste real messages or attachments.
+
 ## Run (Node.js 22+; target Node 24)
 
 ```bash
@@ -59,3 +61,7 @@ After an assessment proposes a synthetic report, review the sanitized metadata i
 ## Synthetic referral preview
 
 Choose the Global, UAE, or India **demo** pack before analyzing. An approved synthetic proposal creates a local referral preview with a versioned review checklist and `destination: "none"`; a declined or expired proposal creates none. The packs contain no official reporting routes or legal rules. A human would need to verify any real destination independently. The preview contains only sanitized metadata and disappears when the server restarts.
+
+## Financial scam examples
+
+The expanded synthetic examples use a versioned indicator vocabulary (`evaluation_version: v2`). Independent verification still blocks unsupported action and evidence codes. Guidance is based on published advice about [rental listing fraud](https://consumer.ftc.gov/articles/rental-listing-scams), [verification-code scams](https://consumer.ftc.gov/consumer-alerts/2024/03/whats-verification-code-why-would-someone-ask-me-it), [card-data compromise](https://www.consumerfinance.gov/consumer-tools/bank-accounts/watch-accounts-closely-when-card-data-is-hacked/), and [phishing attachments](https://www.cisa.gov/sites/default/files/2024-09/Secure-Our-World-Phishing-Tip-Sheet.pdf). New patterns are English demo rules; the language selector does not imply validated detection in every language.

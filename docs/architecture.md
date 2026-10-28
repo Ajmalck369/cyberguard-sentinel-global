@@ -1,7 +1,7 @@
 # CyberGuard Sentinel Global — proposed production architecture
 
 ## Scope
-New synthetic-data hackathon application; no real cases, agencies, financial action, enforcement, or legal assessment. All model outputs are proposals.
+New synthetic-data hackathon application focused on financial and real-estate scam messages; no real cases, agencies, financial action, enforcement, or legal assessment. All model outputs are proposals.
 
 ## Components
 - Intake and consent gate: user must affirm inputs are synthetic in the demo.
