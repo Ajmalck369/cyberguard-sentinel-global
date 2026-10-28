@@ -12,7 +12,7 @@ const suspicious_patterns = [
   { id:'ransomware_threat', pattern:/\b(ransomware|files (?:are |were |will be )?encrypted|decrypt (?:your )?files|pay (?:the )?ransom)\b/i },
   { id:'attachment_lure', pattern:/\b(open|download|run)\b.{0,60}\b(attachment|file|invoice|document)\b|\benable macros\b/i }
 ];
-const evidence_for_action=Object.freeze({
+export const evidence_for_action=Object.freeze({
   stop_disclosing_secrets:['credential_request'],
   avoid_untrusted_links:['phishing_link'],
   verify_property_listing:['rental_deposit_pressure','no_viewing_pressure'],

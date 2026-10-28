@@ -20,4 +20,4 @@ npm run evaluate
 npm run evaluate -- --mode=meta --ids=otp_01,phishing_01,rental_01,card_01,ransomware_01,benign_01
 ```
 
-The second command makes six live Meta Model API calls. Set `MODEL_API_KEY` in the local shell first; do not paste it into the repository or a report. Live Muse results can differ from the fixture results. Review the `verification_rejected` and `errors` counts before interpreting accuracy. The evaluator never approves or publishes a report.
+The second command makes six live Meta Model API calls. Set `MODEL_API_KEY` in the local shell first; do not paste it into the repository or a report. Live Muse results can differ from the fixture results. The live request includes the independent risk rule and action evidence requirements, but the independent verifier still rejects any response that violates them. Review each case's `verification_errors` codes and the `verification_rejected` and `errors` counts before interpreting accuracy. A rejected plan is counted as a miss; the evaluator never silently substitutes the rule-based fixture answer. The evaluator never approves or publishes a report.

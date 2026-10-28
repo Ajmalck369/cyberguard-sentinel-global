@@ -37,3 +37,14 @@ test('model failures are counted without exposing input text',async()=>{
   assert.equal(report.errors,1);
   assert.equal(JSON.stringify(report).includes(dataset.cases[0].message),false);
 });
+
+test('rejected model plans expose only safe verifier codes and remain misses',async()=>{
+  const secret='FICTIONAL_SECRET_IN_SYNTHETIC_TEST';
+  const report=await evaluate_cases(dataset,{ids:['otp_01'],assessor:async()=>({mode:'meta',plan:{summary:secret,risk_level:'inconclusive',uncertainty:[secret],actions:[]}})});
+  assert.equal(report.correct,0);
+  assert.equal(report.verification_rejected,1);
+  assert.equal(report.cases[0].predicted_risk,'rejected');
+  assert.deepEqual(report.cases[0].verification_errors,['risk_mismatch']);
+  assert.equal(report.cases[0].independent_risk_level,'high_risk');
+  assert.equal(JSON.stringify(report).includes(secret),false);
+});
