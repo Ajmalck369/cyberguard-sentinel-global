@@ -7,8 +7,8 @@ New synthetic-data hackathon application; no real cases, agencies, financial act
 - Intake and consent gate: user must affirm inputs are synthetic in the demo.
 - Muse Spark agent: bounded prompts and JSON schema; tool calls introduced in later milestones.
 - Deterministic risk indicators: auditable regex examples, not comprehensive detection.
-- Independent policy verifier: disallow external action codes; require observed evidence codes.
-- Human gate: gated case/report actions remain pending, not automatically executed.
+- Independent policy verifier: recompute risk from local indicators; validate model structure, action codes and observed evidence references before guidance lookups.
+- Human gate: a local, one-time synthetic report decision can be approved or declined within 15 minutes; no external action follows.
 - Intelligence export: strict metadata allowlist, separate manual CLI, synthetic and approved flags.
 - Audit: current demo returns a single SHA-256 record; persistent append-only audit is future work.
 
