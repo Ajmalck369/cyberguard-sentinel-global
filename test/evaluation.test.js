@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {evaluate_cases,validate_evaluation_dataset} from '../src/evaluation.js';
+import {baseline_analysis} from '../src/core.js';
 
 const dataset=JSON.parse(await readFile(new URL('../fixtures/evaluation_v1.json',import.meta.url),'utf8'));
 
@@ -19,6 +20,7 @@ test('evaluation reports risk and policy outcomes without raw messages',async()=
   assert.equal(report.total,50);
   assert.equal(report.errors,0);
   assert.equal(report.verification_rejected,0);
+  assert.equal(report.model_tool_calls,0);
   assert.ok(report.accuracy>=0.9);
   assert.ok(report.high_risk_recall>=0.9);
   assert.ok(report.benign_false_alarm_rate<=0.1);
@@ -47,4 +49,10 @@ test('rejected model plans expose only safe verifier codes and remain misses',as
   assert.deepEqual(report.cases[0].verification_errors,['risk_mismatch']);
   assert.equal(report.cases[0].independent_risk_level,'high_risk');
   assert.equal(JSON.stringify(report).includes(secret),false);
+});
+
+test('evaluation counts independently checked model tool lookups',async()=>{
+  const report=await evaluate_cases(dataset,{ids:['otp_01'],assessor:async input=>({...baseline_analysis(input),mode:'meta-tools',tool_history:[{code:'stop_disclosing_secrets',status:'verified'}]})});
+  assert.equal(report.model_tool_calls,1);
+  assert.equal(report.cases[0].model_tool_calls,1);
 });
