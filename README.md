@@ -82,7 +82,7 @@ The global property context is **entirely fictional**: it illustrates rental, up
 
 ## Reviewed intelligence staging
 
-`src/intelligence.js` verifies a signed, same-repository, merged-PR webhook event and stages its provenance. A human must then explicitly promote a strictly sanitized synthetic report into a versioned in-memory registry. There is no automatic learning, model-weight update, live webhook listener or external publication. A hosted, persistent ingestion service remains future work.
+`src/intelligence.js` verifies a signed, same-repository, merged-PR webhook event and stages its provenance. Set `GITHUB_WEBHOOK_SECRET` and `GITHUB_REPOSITORY` to enable the local-only `POST /api/v1/intelligence/webhook` endpoint. A human must then explicitly promote a strictly sanitized synthetic report into a versioned in-memory registry. There is no automatic learning, model-weight update or external publication. This loopback endpoint is not reachable by GitHub; a hosted, persistent ingestion service remains future work.
 
 Run `npm run intelligence-demo` to exercise the staging and review sequence with a fictional repository and fictional signing secret. It never contacts GitHub.
 
