@@ -23,6 +23,9 @@ by_id('run').addEventListener('click',async()=>{
   by_id('state').textContent='Analyzing synthetic scenario...';
   by_id('result').textContent='';
   by_id('trace').replaceChildren();
+  by_id('guidance-list').replaceChildren();
+  by_id('read-guidance').disabled=true;
+  by_id('read-guidance').dataset.guidance='';
   try {
     const response=await fetch('/api/v1/synthetic_assessments',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({message:by_id('msg').value,language:by_id('lang').value,country_code:by_id('country').value,scenario_id:'web_demo',synthetic_confirmed:by_id('confirm').checked})});
     const data=await response.json();
@@ -30,6 +33,11 @@ by_id('run').addEventListener('click',async()=>{
     const visible={...data,approval:data.approval?{status:data.approval.status,expires_at:data.approval.expires_at}:null};
     displayed_result=visible;
     by_id('result').textContent=JSON.stringify(visible,null,2);
+    const guidance=Array.isArray(data.tool_results)?data.tool_results.filter(item=>item.status==='completed'&&typeof item.guidance==='string').map(item=>item.guidance):[];
+    for(const line of guidance){const item=document.createElement('li');item.textContent=line;by_id('guidance-list').append(item);}
+    if(!guidance.length){const item=document.createElement('li');item.textContent='No verified guidance was produced.';by_id('guidance-list').append(item);}
+    by_id('read-guidance').dataset.guidance=guidance.join(' ');
+    by_id('read-guidance').disabled=guidance.length===0||by_id('read-guidance').dataset.speechAvailable!=='true';
     if(response.ok&&Array.isArray(data.trace)){
       const title=document.createElement('h3');title.textContent='Agent execution trace';by_id('trace').append(title);
       for(const item of data.trace){const line=document.createElement('div');line.className='trace-step';line.textContent=`${item.sequence}. ${item.step} / ${item.tool} — ${item.status}`;by_id('trace').append(line);}

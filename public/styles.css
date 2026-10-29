@@ -3,3 +3,10 @@
 
 .trace-step{border-left:3px solid #61c9bf;padding:9px 12px;margin:7px 0;background:#183449;border-radius:5px;font-size:13px}#trace{margin:12px 0}
 .approval{border-top:1px solid #335267;margin-top:20px;padding-top:12px}.approval[hidden]{display:none}.approval button{margin-right:10px}.approval button:disabled{opacity:.5;cursor:not-allowed}
+.skip-link{position:absolute;left:-9999px;top:8px;background:#fff;color:#091421;padding:10px;z-index:10}.skip-link:focus{left:8px}
+:focus-visible{outline:3px solid #ffe08a;outline-offset:3px}
+.accessibility-controls{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 22px}.accessibility-controls button{margin:0}
+button:disabled{opacity:.55;cursor:not-allowed}
+body.large-text{font-size:1.2rem}body.large-text pre,body.large-text .trace-step{font-size:1rem}
+.property-demo{margin-top:20px}.property-demo li{margin:8px 0}#vr-canvas{display:block;width:100%;max-width:640px;height:auto;background:#0d1824;border:1px solid #577087;border-radius:8px;margin-top:14px}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:0.01ms!important;transition-duration:0.01ms!important}}

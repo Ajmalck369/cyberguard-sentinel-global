@@ -3,6 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": {"start":"node src/server.js", "test":"node --test test/*.test.js", "evaluate":"node scripts/evaluate.mjs"},
+  "scripts": {"start":"node src/server.js", "test":"node --test test/*.test.js", "evaluate":"node scripts/evaluate.mjs", "intelligence-demo":"node scripts/intelligence_demo.mjs"},
   "engines":{"node":">=22"}
 }
