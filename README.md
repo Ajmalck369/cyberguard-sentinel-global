@@ -22,7 +22,7 @@ PowerShell: `$env:AI_MODE='meta'; $env:MODEL_API_KEY='...'; npm start`.
 
 Uses documented Meta API base `https://api.meta.ai/v1`, model `muse-spark-1.3`, Chat Completions and JSON schema output. A user-run live smoke test of six invented English cases matched all six authored labels with no verifier rejections or API errors. This small selected test is not real-world detection accuracy.
 
-For an optional, bounded [Meta function-calling](https://dev.meta.ai/docs/cookbook/tool-function-calling) demonstration, set `AI_MODE=meta-tools` with the same local `MODEL_API_KEY`. The model can request only fixed local guidance lookups; each request is checked against observed indicators before execution. This mode has mocked tests but still needs a live API smoke test. `AI_MODE=meta` remains the tested single-call path.
+For an optional, bounded [Meta function-calling](https://dev.meta.ai/docs/cookbook/tool-function-calling) demonstration, set `AI_MODE=meta-tools` with the same local `MODEL_API_KEY`. The model can request only fixed local guidance lookups; each request is checked against observed indicators before execution. A user-run live smoke test of six selected synthetic English cases made eight verified model tool calls, matched all six authored labels, and had no verifier rejections or API errors. `AI_MODE=meta` remains available.
 
 ## Privacy and evidence
 
