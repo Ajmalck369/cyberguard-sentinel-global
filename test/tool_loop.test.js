@@ -41,6 +41,7 @@ test('unsafe tool request stops the model loop and all post-verification actions
     const result=await run_agent(input,{assessor:async()=>assessment});
     assert.equal(calls,1);
     assert.equal(result.verification.status,'rejected');
+    assert.ok(result.verification.errors.includes('tool_request_rejected'));
     assert.deepEqual(result.tool_results,[]);
     assert.equal(JSON.stringify(result).includes('freeze_real_account'),false);
   } finally {globalThis.fetch=original;}

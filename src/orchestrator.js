@@ -20,7 +20,7 @@ export async function run_agent(input,{assessor=process.env.AI_MODE==='meta-tool
   record('observe','inspect_indicators','completed',{indicator_codes:indicators});
   const result=await assessor({...input,language,scenario_id});
   const {plan,verification:initial}=verify_assessment(result,indicators);
-  const safe_tool_errors=new Set(['tool_limit_exceeded','disallowed_action','unsupported_evidence_reference','action_not_grounded']);
+  const safe_tool_errors=new Set(['tool_limit_exceeded','disallowed_action','unsupported_evidence_reference','action_not_grounded','invalid_actions']);
   for(const item of Array.isArray(result?.tool_history)?result.tool_history.slice(0,4):[]){
     const code=allowlist.has(item?.code)?item.code:'invalid';
     const status=['verified','blocked'].includes(item?.status)?item.status:'blocked';

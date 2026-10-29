@@ -17,7 +17,7 @@ async function completion(request,key){
 }
 
 function blocked(indicators,scenario_id,language,history){
-  return {mode:'meta-tools',scenario_id,language,indicator_codes:indicators,tool_history:history,plan:{summary:'Tool request blocked by independent verifier.',risk_level:independent_risk(indicators),uncertainty:['model_tool_request_not_verified'],actions:[],blocked_tool_request:true}};
+  return {mode:'meta-tools',scenario_id,language,indicator_codes:indicators,tool_history:history,tool_request_rejected:true,plan:{summary:'Tool request blocked by independent verifier.',risk_level:independent_risk(indicators),uncertainty:['model_tool_request_not_verified'],actions:[]}};
 }
 
 export async function assess_with_meta_tools({message,language='en',scenario_id='demo'},configuration=process.env){
@@ -55,10 +55,11 @@ export async function assess_with_meta_tools({message,language='en',scenario_id=
     const requests=[];
     for(const call of calls){
       let args;
-      try {args=JSON.parse(call.function?.arguments||'null');} catch {args=null;}
+      try {args=typeof call.function?.arguments==='string'&&call.function.arguments.length<=2000?JSON.parse(call.function.arguments):null;} catch {args=null;}
       const code=args?.code;
       const checked=verify_plan({actions:[args]},{indicator_codes:indicators});
-      if(call.type!=='function'||call.function?.name!==tool_name||!tool_id.test(call.id||'')||!allowed.includes(code)||seen.has(code)||checked.errors.length){
+      const valid_shape=args&&typeof args==='object'&&!Array.isArray(args)&&Object.keys(args).sort().join(',')==='code,evidence_codes'&&Array.isArray(args.evidence_codes)&&args.evidence_codes.length<=12;
+      if(!valid_shape||call.type!=='function'||call.function?.name!==tool_name||!tool_id.test(call.id||'')||!allowed.includes(code)||seen.has(code)||checked.errors.length){
         return blocked(indicators,scenario_id,language,[...history,{code:'invalid',status:'blocked',errors:checked.errors.length?checked.errors:['disallowed_action']}]);
       }
       seen.add(code);
