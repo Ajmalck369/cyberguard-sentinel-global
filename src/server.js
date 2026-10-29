@@ -7,15 +7,17 @@ import {create_audit_log} from './audit.js';
 import {run_agent} from './orchestrator.js';
 import {country_codes} from './referral.js';
 import {create_intelligence_store} from './intelligence.js';
+import {create_postgres_store} from './postgres.js';
 
 const public_dir=fileURLToPath(new URL('../public/',import.meta.url));
 const property_fixture=fileURLToPath(new URL('../fixtures/property_global_synthetic.json',import.meta.url));
 const approval_path=/^\/api\/v1\/synthetic_assessments\/([0-9a-f-]{36})\/approval$/;
 const send=(res,status,obj)=>{res.writeHead(status,{'content-type':'application/json; charset=utf-8','cache-control':'no-store','x-content-type-options':'nosniff'});res.end(JSON.stringify(obj));};
 
-export function create_server({assessor,intelligence}={}) {
-  const approvals=create_approval_store();
-  const audit=process.env.AUDIT_FILE?create_audit_log(process.env.AUDIT_FILE):null;
+export function create_server({assessor,intelligence,storage}={}) {
+  const database_enabled=Boolean(storage||process.env.DATABASE_URL);
+  const approvals=storage??(process.env.DATABASE_URL?create_postgres_store({connectionString:process.env.DATABASE_URL}):create_approval_store());
+  const audit=!database_enabled&&process.env.AUDIT_FILE?create_audit_log(process.env.AUDIT_FILE):null;
   const intelligence_store=intelligence??(process.env.GITHUB_WEBHOOK_SECRET&&process.env.GITHUB_REPOSITORY?create_intelligence_store({repository_full_name:process.env.GITHUB_REPOSITORY,secret:process.env.GITHUB_WEBHOOK_SECRET}):null);
   return http.createServer(async(req,res)=>{
     if(req.method==='GET'&&req.url==='/'){
@@ -54,7 +56,7 @@ export function create_server({assessor,intelligence}={}) {
       const body=JSON.parse(raw);
       if(approval_match){
         if(body?.synthetic_confirmed!==true || body?.decision!=='approve'&&body?.decision!=='decline') return send(res,400,{error:'explicit_decision_required'});
-        const decision=approvals.decide(approval_match[1],body.token,body.decision);
+        const decision=await (await approvals).decide(approval_match[1],body.token,body.decision);
         const status=decision.status==='not_found'?404:decision.status==='expired'||decision.status==='already_decided'?409:decision.status==='invalid_token'?403:200;
         if(status===200&&audit) await (await audit).append_decision(approval_match[1],decision.status);
         return send(res,status,decision);
@@ -64,9 +66,9 @@ export function create_server({assessor,intelligence}={}) {
       if(!country_codes.includes(country_code)) return send(res,400,{error:'unsupported_country_code'});
       const result=await run_agent(body,{assessor});
       if(audit) await (await audit).append_assessment(result);
-      const approval=approvals.create(result,country_code);
+      const approval=await (await approvals).create(result,country_code);
       return send(res,200,{...result,approval});
-    }catch(error){return send(res,502,{error:'assessment_failed',detail:String(error.message||error).slice(0,120)});}
+    }catch{return send(res,502,{error:'assessment_failed'});}
   });
 }
 

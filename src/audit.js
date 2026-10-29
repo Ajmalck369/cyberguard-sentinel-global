@@ -2,13 +2,13 @@ import {createHash} from 'node:crypto';
 import {appendFile,readFile,mkdir} from 'node:fs/promises';
 import {dirname} from 'node:path';
 
-const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
+export const hash_audit_value=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const statuses=new Set(['approved_locally','declined']);
+const statuses=new Set(['approved_locally','declined','expired']);
 const risk_levels=new Set(['high_risk','suspicious','inconclusive']);
 const verification_statuses=new Set(['verified','pending_human_approval','rejected']);
 
-function project_event(type,result){
+export function project_audit_event(type,result){
   if(!uuid.test(result?.run_id)) throw new Error('invalid_audit_run_id');
   if(type==='assessment'){
     if(!risk_levels.has(result.plan?.risk_level)||!verification_statuses.has(result.verification?.status)) throw new Error('invalid_audit_assessment');
@@ -27,19 +27,19 @@ export async function create_audit_log(file){
   let previous_hash='0'.repeat(64);
   for(const [index,row] of rows.entries()){
     const {hash:row_hash,...unsigned}=row;
-    if(row.sequence!==index+1||row.previous_hash!==previous_hash||row_hash!==hash(unsigned)||!['assessment','decision'].includes(row.event?.type)||!uuid.test(row.event?.run_id)) throw new Error('audit_chain_invalid');
+    if(row.sequence!==index+1||row.previous_hash!==previous_hash||row_hash!==hash_audit_value(unsigned)||!['assessment','decision'].includes(row.event?.type)||!uuid.test(row.event?.run_id)) throw new Error('audit_chain_invalid');
     const key=`${row.event.type}:${row.event.run_id}`;
     if(seen.has(key)) throw new Error('audit_duplicate_event');
     seen.add(key);previous_hash=row_hash;
   }
   let pending=Promise.resolve();
   const append=(type,result)=>{
-    const event=project_event(type,result);
+    const event=project_audit_event(type,result);
     const key=`${type}:${event.run_id}`;
     const job=pending.then(async()=>{
       if(seen.has(key)) return {status:'already_recorded'};
       const unsigned={schema_version:1,sequence:rows.length+1,previous_hash,event};
-      const row={...unsigned,hash:hash(unsigned)};
+      const row={...unsigned,hash:hash_audit_value(unsigned)};
       await mkdir(dirname(file),{recursive:true});
       await appendFile(file,JSON.stringify(row)+'\n',{encoding:'utf8',mode:0o600});
       rows.push(row);seen.add(key);previous_hash=row.hash;

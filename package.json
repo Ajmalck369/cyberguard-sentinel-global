@@ -3,6 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "scripts": {"start":"node src/server.js", "test":"node --test test/*.test.js", "evaluate":"node scripts/evaluate.mjs", "intelligence-demo":"node scripts/intelligence_demo.mjs"},
-  "engines":{"node":">=22"}
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js",
+    "evaluate": "node scripts/evaluate.mjs",
+    "intelligence-demo": "node scripts/intelligence_demo.mjs",
+    "db:migrate": "node scripts/migrate.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
 }
