@@ -22,3 +22,7 @@ npm run evaluate -- --mode=meta-tools --ids=otp_01,phishing_01,rental_01,card_01
 ```
 
 The second command makes six live Meta Model API calls. The third runs the optional bounded function-call loop and may make more than six calls, so it can cost more. Set `MODEL_API_KEY` in the local shell first; do not paste it into the repository or a report. Live Muse results can differ from the fixture results. The live request includes the independent risk rule and action evidence requirements, but the independent verifier still rejects any response that violates them. Review each case's `verification_errors` codes, `model_tool_calls`, and the `verification_rejected` and `errors` counts before interpreting accuracy. A rejected plan is counted as a miss; the evaluator never silently substitutes the rule-based fixture answer. A passing `meta-tools` result with zero model tool calls does not demonstrate a tool call loop. The evaluator never approves or publishes a report.
+
+## Selected live smoke test (October 29, 2026)
+
+The user ran the six-case `meta-tools` command above with a locally stored Muse key. The result was 6/6 authored labels, 5/5 authored high-risk cases, 0/1 benign false alarms, zero verifier rejections, zero API errors, and eight verified model tool calls (one or two per case). All six cases were invented and in English. This confirms the optional tool loop ran on these selected examples; it does not establish real-world accuracy, broader multilingual performance, or headset/accessibility behavior.
