@@ -56,3 +56,11 @@ test('rejects unexpected plan fields and suppresses their content',async()=>{
   assert.equal(JSON.stringify(result).includes(secret),false);
   assert.deepEqual(result.tool_results,[]);
 });
+
+test('model tool trace projects unknown values to safe codes',async()=>{
+  const secret='FICTIONAL_SECRET_IN_SYNTHETIC_TEST';
+  const assessor=async value=>({...baseline_analysis(value),mode:'meta-tools',tool_history:[{code:secret,status:secret,errors:[secret]}]});
+  const result=await run_agent(input,{assessor});
+  assert.equal(JSON.stringify(result).includes(secret),false);
+  assert.deepEqual(result.trace.find(item=>item.step==='model_tool').details,{action_code:'invalid',errors:[]});
+});

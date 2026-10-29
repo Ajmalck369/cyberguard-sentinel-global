@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "synthetic_only": true,
+  "place": "Example Coast (fictional)",
+  "source_status": "no_external_source_connected",
+  "rental": {"example": "Two-room apartment", "monthly_demo_credits": 1200, "verified_market_value": false},
+  "upcoming_project": {"example": "Harbor Walk (fictional)", "status": "concept_example", "verified_permit": false},
+  "land_value": {"example": "Residential plot", "demo_credits_per_square_metre": 50, "verified_market_value": false},
+  "calamity_history": {"example": "Fictional storm exercise", "status": "illustrative_only", "verified_event": false},
+  "notice": "All names and amounts are invented. Do not use this example to price, buy, rent, insure or assess a real property."
+}

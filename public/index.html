@@ -7,9 +7,16 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <main id="main">
   <h1>CyberGuard Sentinel <span style="color:#61c9bf">Global</span></h1>
   <p>Financial scam response research prototype, including real-estate fraud.</p>
   <p class="warn">SYNTHETIC DEMO ONLY — Do not paste genuine victim evidence, private information or real credentials. No agency or GitHub submission occurs.</p>
+  <div class="accessibility-controls" aria-label="Accessibility controls">
+    <button id="large-text" type="button" aria-pressed="false">Larger text</button>
+    <button id="read-guidance" type="button" disabled>Read verified guidance aloud</button>
+    <button id="stop-speech" type="button" disabled>Stop reading</button>
+  </div>
   <div class="grid">
     <section class="panel">
       <h2>Assess a sample</h2>
@@ -27,6 +34,8 @@
     </section>
     <section class="panel">
       <h2>Analysis + independent verification</h2>
+      <h3>Verified guidance in text</h3>
+      <ul id="guidance-list" aria-live="polite"><li>Run an analysis to see the guidance.</li></ul>
       <div id="trace" aria-live="polite"></div>
       <pre id="result">Run an analysis to see the proposed plan, policy verification and sanitized Git report.</pre>
       <div id="approval-panel" class="approval" hidden>
@@ -40,6 +49,25 @@
       </div>
     </section>
   </div>
+  <section class="panel property-demo" aria-labelledby="property-title">
+    <h2 id="property-title">Real-estate context — global synthetic preview</h2>
+    <p>Rental prices, upcoming projects, land values and disaster history require current, licensed source data. The invented example below uses demo credits, not real money or market data.</p>
+    <div id="property-context" aria-live="polite">Loading fictional example…</div>
+    <p>The rental scam checker above uses only the invented message you choose. Muse cannot independently establish property ownership or market values.</p>
+  </section>
+  <section class="panel property-demo" aria-labelledby="tour-title">
+    <h2 id="tour-title">Standalone VR room preview</h2>
+    <p>This fictional, stationary room demonstrates an optional VR view. A headset is not required to use the rest of the demo. The scene contains no real property imagery or listing.</p>
+    <p id="tour-description">Room description: a small rectangular room with blue walls, a green floor, a window and a simple couch. The view stays still for seated use.</p>
+    <button id="enter-vr" type="button" disabled>Checking VR support…</button>
+    <button id="exit-vr" type="button" hidden>Exit VR</button>
+    <p id="vr-state" role="status">VR support has not been checked.</p>
+    <canvas id="vr-canvas" width="640" height="360" aria-hidden="true"></canvas>
+  </section>
+  </main>
   <script type="module" src="/app.js"></script>
+  <script type="module" src="/accessibility.js"></script>
+  <script type="module" src="/property.js"></script>
+  <script type="module" src="/tour.js"></script>
 </body>
 </html>
