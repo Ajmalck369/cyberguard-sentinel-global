@@ -30,6 +30,8 @@ No real messages, evidence, victim details or secrets. Frontend requires synthet
 
 For an optional local hash-chained metadata audit, set `AUDIT_FILE` to a path under an ignored private directory such as `private_data/audit.jsonl`. Audit records of assessments and local approval decisions then survive a restart; the pending approval itself remains in memory. The file contains bounded codes and hashes, not the original message. This is not a PostgreSQL deployment, authenticated multi-user access control, or a tamper-proof external ledger.
 
+For optional PostgreSQL-backed synthetic approval and audit persistence, see [docs/postgres.md](docs/postgres.md). The database path is tested in CI; the app remains loopback-only and has no multi-user authentication. `DATABASE_URL` is never stored in the repository.
+
 ## Optional manual GitHub issue (only for reviewed synthetic examples)
 
 Provide `GITHUB_TOKEN` with minimal `Issues:write` permission on one designated repository and `GITHUB_REPOSITORY=owner/repo`. Run:
