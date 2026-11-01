@@ -8,6 +8,7 @@
 - Fictional global property context, accessible text and speech controls, and optional stationary WebXR preview.
 - Local hash-chain audit option and signed merged-PR staging module with explicit synthetic review.
 - Optional PostgreSQL-backed synthetic approval and audit persistence with CI integration tests.
+- Expanded 60-case offline challenge evaluation with category results and explicit false-alarm cases; rejected model plans export no approved action codes.
 
 ## Requires external setup or review
 
@@ -16,6 +17,7 @@
 - Choose and configure a private PostgreSQL service, TLS, least-privilege roles, user authentication/authorization, backup and restore before multi-user or public access. The CI database is ephemeral; no production database is configured.
 - Connect a secured, reachable GitHub webhook delivery endpoint and durable review store. The current signed endpoint listens only on loopback.
 - Have native speakers review the short non-English cases and run a broader live evaluation if budget permits.
+- Run the expanded corpus with Muse under the owner's local API key and review rejections, errors and educational false alarms before making any model-performance claim. The 60-case result in the repository is fixture-only.
 - Test on an actual VR headset and with screen reader, keyboard-only, speech and reduced-motion settings; the code has no device certification.
 - Record the demo video from the final build, verify submission requirements and organizer eligibility, then submit only when the owner approves the final material.
 

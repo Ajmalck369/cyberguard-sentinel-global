@@ -74,5 +74,11 @@ export function create_server({assessor,intelligence,storage}={}) {
 
 if(process.argv[1] && resolve(process.argv[1])===fileURLToPath(import.meta.url)) {
   const port=Number(process.env.PORT||8099);
-  create_server().listen(port,'127.0.0.1',()=>console.log(`CyberGuard Sentinel synthetic demo on http://127.0.0.1:${port}`));
+  const server=create_server();
+  server.on('error',error=>{
+    if(error.code==='EADDRINUSE') console.error(`Port ${port} is already in use. Open http://127.0.0.1:${port} or set PORT to another port before starting.`);
+    else console.error(`Server failed to start: ${error.code||'unknown_error'}`);
+    process.exitCode=1;
+  });
+  server.listen(port,'127.0.0.1',()=>console.log(`CyberGuard Sentinel synthetic demo on http://127.0.0.1:${port}`));
 }

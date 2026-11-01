@@ -40,6 +40,10 @@ export async function evaluate_cases(dataset,{assessor=async input=>baseline_ana
     const subset=results.filter(row=>row.language===language);
     return [language,{total:subset.length,correct:count(subset,row=>row.predicted_risk===row.expected_risk)}];
   }));
+  const by_category=Object.fromEntries([...new Set(results.map(row=>row.category))].map(category=>{
+    const subset=results.filter(row=>row.category===category);
+    return [category,{total:subset.length,correct:count(subset,row=>row.predicted_risk===row.expected_risk),rejected:count(subset,row=>row.verification_status==='rejected')}];
+  }));
   return {
     total:results.length,
     correct,
@@ -50,6 +54,7 @@ export async function evaluate_cases(dataset,{assessor=async input=>baseline_ana
     errors:count(results,row=>row.verification_status==='error'),
     model_tool_calls:results.reduce((total,row)=>total+row.model_tool_calls,0),
     by_language,
+    by_category,
     cases:results
   };
 }
