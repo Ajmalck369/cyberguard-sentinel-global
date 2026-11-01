@@ -5,16 +5,18 @@ import {assess_with_meta} from '../src/meta.js';
 import {assess_with_meta_tools} from '../src/tool_loop.js';
 
 const options=new Map(process.argv.slice(2).map(argument=>{
-  const match=argument.match(/^--(mode|ids)=(.+)$/);
-  if(!match) throw new Error('Usage: node scripts/evaluate.mjs [--mode=fixture|meta|meta-tools] [--ids=id1,id2]');
+  const match=argument.match(/^--(mode|ids|dataset)=(.+)$/);
+  if(!match) throw new Error('Usage: node scripts/evaluate.mjs [--mode=fixture|meta|meta-tools] [--dataset=v1|v2] [--ids=id1,id2]');
   return [match[1],match[2]];
 }));
 const mode=options.get('mode')||'fixture';
 if(!['fixture','meta','meta-tools'].includes(mode)) throw new Error('unsupported_evaluation_mode');
+const dataset_id=options.get('dataset')||'v2';
+if(!['v1','v2'].includes(dataset_id)) throw new Error('unsupported_evaluation_dataset');
 if(mode!=='fixture' && !process.env.MODEL_API_KEY) throw new Error('MODEL_API_KEY is required for live evaluation');
 const ids=options.has('ids')?options.get('ids').split(','):undefined;
-const dataset=JSON.parse(await readFile(new URL('../fixtures/evaluation_v1.json',import.meta.url),'utf8'));
+const dataset=JSON.parse(await readFile(new URL(`../fixtures/evaluation_${dataset_id}.json`,import.meta.url),'utf8'));
 const assessor=mode==='meta'?input=>assess_with_meta(input,{...process.env,AI_MODE:'meta'}):mode==='meta-tools'?input=>assess_with_meta_tools(input,{...process.env,AI_MODE:'meta-tools'}):input=>baseline_analysis(input);
 const report=await evaluate_cases(dataset,{assessor,ids});
-console.log(JSON.stringify({mode,...report},null,2));
+console.log(JSON.stringify({mode,dataset:dataset_id,...report},null,2));
 if(report.errors) process.exitCode=1;
