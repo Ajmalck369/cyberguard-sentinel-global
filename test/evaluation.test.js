@@ -5,6 +5,7 @@ import {evaluate_cases,validate_evaluation_dataset} from '../src/evaluation.js';
 import {baseline_analysis} from '../src/core.js';
 
 const dataset=JSON.parse(await readFile(new URL('../fixtures/evaluation_v1.json',import.meta.url),'utf8'));
+const challenge=JSON.parse(await readFile(new URL('../fixtures/evaluation_v2.json',import.meta.url),'utf8'));
 
 test('evaluation corpus is synthetic, unique, and balanced across outcomes',()=>{
   const cases=validate_evaluation_dataset(dataset);
@@ -25,6 +26,21 @@ test('evaluation reports risk and policy outcomes without raw messages',async()=
   assert.ok(report.high_risk_recall>=0.9);
   assert.ok(report.benign_false_alarm_rate<=0.1);
   for(const scenario of dataset.cases) assert.equal(JSON.stringify(report).includes(scenario.message),false);
+});
+
+test('expanded challenge corpus preserves old cases and exposes false alarms',async()=>{
+  const cases=validate_evaluation_dataset(challenge);
+  assert.equal(cases.length,60);
+  assert.deepEqual(cases.slice(0,50),dataset.cases);
+  const report=await evaluate_cases(challenge);
+  assert.equal(report.total,60);
+  assert.equal(report.errors,0);
+  assert.equal(report.verification_rejected,0);
+  assert.equal(report.high_risk_recall,1);
+  assert.equal(report.by_category.prompt_injection.total,5);
+  assert.equal(report.by_category.prompt_injection.correct,5);
+  assert.equal(report.by_category.education.correct,0);
+  for(const scenario of cases) assert.equal(JSON.stringify(report).includes(scenario.message),false);
 });
 
 test('evaluation rejects real URLs and unknown case ids',async()=>{
@@ -55,4 +71,11 @@ test('evaluation counts independently checked model tool lookups',async()=>{
   const report=await evaluate_cases(dataset,{ids:['otp_01'],assessor:async input=>({...baseline_analysis(input),mode:'meta-tools',tool_history:[{code:'stop_disclosing_secrets',status:'verified'}]})});
   assert.equal(report.model_tool_calls,1);
   assert.equal(report.cases[0].model_tool_calls,1);
+});
+
+test('injected text cannot turn an ungrounded model action into an approved report action',async()=>{
+  const report=await evaluate_cases(challenge,{ids:['injection_01'],assessor:async input=>({mode:'meta',language:input.language,scenario_id:input.scenario_id,plan:{summary:'safe',risk_level:'high_risk',uncertainty:[],actions:[{code:'verify_property_listing',evidence_codes:[]}]}})});
+  assert.equal(report.verification_rejected,1);
+  assert.equal(report.cases[0].predicted_risk,'rejected');
+  assert.deepEqual(report.cases[0].verification_errors,['action_not_grounded']);
 });
