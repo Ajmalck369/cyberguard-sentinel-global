@@ -7,10 +7,13 @@ The demo focuses on financial scam signals: phishing links, OTP and card-detail 
 ## Run (Node.js 22+; target Node 24)
 
 ```bash
+npm ci
 npm test
 npm start
 # open http://127.0.0.1:8099
 ```
+
+Run `npm ci` again after pulling updates that change `package-lock.json`. If port 8099 is occupied, open that address to check whether the app is already running. To use another port in PowerShell: `$env:PORT='8100'; npm start`, then open `http://127.0.0.1:8100`.
 
 Fixture mode runs without credentials and is **not evidence of live AI**. For live Muse Spark on **synthetic messages only**:
 
@@ -74,7 +77,7 @@ The expanded synthetic examples use a versioned indicator vocabulary (`evaluatio
 
 ## Synthetic evaluation
 
-Run `npm run evaluate` for 50 invented scam, ambiguous, and benign examples. The current fixture rules match 48/50 authored labels; this is a small demonstration result, not a real-world accuracy claim. Five short non-English examples are exploratory and require native-speaker review. For an explicit live Muse smoke test using your local `MODEL_API_KEY`, see `docs/evaluation.md`. No live API calls run in CI.
+Run `npm run evaluate` for the 60-case synthetic challenge corpus, including four adversarial messages and two educational negation examples. The fixture rules match 56/60 authored labels; two original ambiguous finance cases and two new educational examples remain misses. Use `npm run evaluate -- --dataset=v1` to reproduce the original 48/50 baseline. These small authored results are not real-world accuracy claims. Five short non-English examples are exploratory and require native-speaker review. For an explicit live Muse smoke test using your local `MODEL_API_KEY`, see `docs/evaluation.md`. No live API calls run in CI.
 
 ## Accessibility, property context and VR preview
 
