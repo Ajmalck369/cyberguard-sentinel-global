@@ -45,7 +45,7 @@ export async function run_agent(input,{assessor=process.env.AI_MODE==='meta-tool
     }
   } else record('act','tool_execution','blocked',{reason:'verification_rejected'});
   const verification={...initial,executed_tools:tools.filter(x=>x.status==='completed').length};
-  const sanitized=sanitize_public_report({scenario_id,language,risk_level:plan.risk_level,indicator_codes:indicators,approved_action_codes:plan.actions.filter(action=>action.code!=='submit_synthetic_report').map(action=>action.code)});
+  const sanitized=sanitize_public_report({scenario_id,language,risk_level:plan.risk_level,indicator_codes:indicators,approved_action_codes:initial.status==='rejected'?[]:plan.actions.filter(action=>action.code!=='submit_synthetic_report').map(action=>action.code)});
   const audit_event={id:randomUUID(),kind:'synthetic_agent_run',at:new Date().toISOString(),hash:hash({scenario_id,indicators,verification,trace})};
   return {mode:result?.mode==='meta-tools'?'meta-tools':result?.mode==='meta'?'meta':'fixture',run_id,language,scenario_id,indicator_codes:indicators,plan,verification,tool_results:tools,trace,proposed_git_report:sanitized,audit_event,note:'Synthetic-only. No agency, bank, or GitHub action executed. Approval is simulated and never automatically granted.'};
 }
