@@ -25,6 +25,10 @@ export async function evaluate_cases(dataset,{assessor=async input=>baseline_ana
     try {
       const result=await run_agent({message:scenario.message,language:scenario.language,scenario_id:scenario.id,synthetic_confirmed:true},{assessor});
       if(JSON.stringify(result).includes(scenario.message)) throw new Error('raw_message_echoed');
+      results.push({id:scenario.id,language:scenario.language,category:scenario.category,expected_risk:scenario.expected_risk,predicted_risk:result.verification.status==='rejected'?'rejected':result.plan.risk_level,verification_status:result.verification.status,verification_errors:result.verification.errors,independent_risk_level:result.verification.independent_risk_level,indicator_codes:result.indicator_codes});
+    }catch(error){
+      if(error.message==='raw_message_echoed') throw error;
+      results.push({id:scenario.id,language:scenario.language,category:scenario.category,expected_risk:scenario.expected_risk,predicted_risk:'error',verification_status:'error',verification_errors:[],independent_risk_level:null,indicator_codes:[]});
       results.push({id:scenario.id,language:scenario.language,category:scenario.category,expected_risk:scenario.expected_risk,predicted_risk:result.verification.status==='rejected'?'rejected':result.plan.risk_level,verification_status:result.verification.status,verification_errors:result.verification.errors,independent_risk_level:result.verification.independent_risk_level,model_tool_calls:result.trace.filter(item=>item.step==='model_tool'&&item.status==='verified').length,indicator_codes:result.indicator_codes});
     }catch(error){
       if(error.message==='raw_message_echoed') throw error;
