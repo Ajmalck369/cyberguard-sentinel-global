@@ -13,6 +13,7 @@ export function independent_risk(indicator_codes) {
 export function verify_assessment(assessment, indicator_codes) {
   const plan=assessment?.plan;
   const errors=[];
+  if(assessment?.tool_request_rejected===true) errors.push('tool_request_rejected');
   if(!plan || typeof plan!=='object' || Array.isArray(plan)) errors.push('invalid_plan');
   else {
     if(Object.keys(plan).some(field=>!plan_fields.has(field))) errors.push('unexpected_plan_field');

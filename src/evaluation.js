@@ -29,6 +29,10 @@ export async function evaluate_cases(dataset,{assessor=async input=>baseline_ana
     }catch(error){
       if(error.message==='raw_message_echoed') throw error;
       results.push({id:scenario.id,language:scenario.language,category:scenario.category,expected_risk:scenario.expected_risk,predicted_risk:'error',verification_status:'error',verification_errors:[],independent_risk_level:null,indicator_codes:[]});
+      results.push({id:scenario.id,language:scenario.language,category:scenario.category,expected_risk:scenario.expected_risk,predicted_risk:result.verification.status==='rejected'?'rejected':result.plan.risk_level,verification_status:result.verification.status,verification_errors:result.verification.errors,independent_risk_level:result.verification.independent_risk_level,model_tool_calls:result.trace.filter(item=>item.step==='model_tool'&&item.status==='verified').length,indicator_codes:result.indicator_codes});
+    }catch(error){
+      if(error.message==='raw_message_echoed') throw error;
+      results.push({id:scenario.id,language:scenario.language,category:scenario.category,expected_risk:scenario.expected_risk,predicted_risk:'error',verification_status:'error',verification_errors:[],independent_risk_level:null,model_tool_calls:0,indicator_codes:[]});
     }
   }
   const count=(subset,predicate)=>subset.filter(predicate).length;
@@ -40,6 +44,10 @@ export async function evaluate_cases(dataset,{assessor=async input=>baseline_ana
     const subset=results.filter(row=>row.language===language);
     return [language,{total:subset.length,correct:count(subset,row=>row.predicted_risk===row.expected_risk)}];
   }));
+  const by_category=Object.fromEntries([...new Set(results.map(row=>row.category))].map(category=>{
+    const subset=results.filter(row=>row.category===category);
+    return [category,{total:subset.length,correct:count(subset,row=>row.predicted_risk===row.expected_risk),rejected:count(subset,row=>row.verification_status==='rejected')}];
+  }));
   return {
     total:results.length,
     correct,
@@ -48,7 +56,9 @@ export async function evaluate_cases(dataset,{assessor=async input=>baseline_ana
     benign_false_alarm_rate:ratio(count(benign,row=>row.predicted_risk!=='inconclusive'),benign.length),
     verification_rejected:count(results,row=>row.verification_status==='rejected'),
     errors:count(results,row=>row.verification_status==='error'),
+    model_tool_calls:results.reduce((total,row)=>total+row.model_tool_calls,0),
     by_language,
+    by_category,
     cases:results
   };
 }
